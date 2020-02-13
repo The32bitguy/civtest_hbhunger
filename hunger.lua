@@ -23,13 +23,14 @@ end
 -- food functions
 local food = hbhunger.food
 
-function hbhunger.register_food(name, hunger_change, replace_with_item, poisen, heal, sound)
+function hbhunger.register_food(name, hunger_change, replace_with_item, poisen, heal, sound, saturation_limit)
 	food[name] = {}
 	food[name].saturation = hunger_change	-- hunger points added
 	food[name].replace = replace_with_item	-- what item is given back after eating
 	food[name].poisen = poisen				-- time its poisening
 	food[name].healing = heal				-- amount of HP
 	food[name].sound = sound				-- special sound that is played when eating
+	food[name].saturation_limit = saturation_limit
 end
 
 function hbhunger.eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
@@ -44,7 +45,7 @@ function hbhunger.eat(hp_change, replace_with_item, itemstack, user, pointed_thi
 		def.saturation = hp_change * 1.3
 		def.replace = replace_with_item
 	end
-	local func = hbhunger.item_eat(def.saturation, def.replace, def.poisen, def.healing, def.sound)
+	local func = hbhunger.item_eat(def.saturation, def.replace, def.poisen, def.healing, def.sound, def.saturation_limit)
 	return func(itemstack, user, pointed_thing)
 end
 
@@ -67,29 +68,44 @@ local function poisenp(tick, time, time_left, player)
 	if player:get_hp()-1 > 0 then
 		player:set_hp(player:get_hp()-1)
 	end
-	
+
 end
 
-function hbhunger.item_eat(hunger_change, replace_with_item, poisen, heal, sound)
+function hbhunger.item_eat(hunger_change, replace_with_item, poisen, heal, sound, sat_limit)
 	return function(itemstack, user, pointed_thing)
-		if itemstack:take_item() ~= nil and user ~= nil then
+		if itemstack:peek_item() ~= nil and user ~= nil then
 			local name = user:get_player_name()
 			local h = tonumber(hbhunger.hunger[name])
 			local hp = user:get_hp()
 			if h == nil or hp == nil then
 				return
 			end
-			minetest.sound_play(
-				{name = sound or "hbhunger_eat_generic",
-				gain = 1},
-				{object=user,
-				max_hear_distance = 16,
-				pitch = 1 + math.random(-10, 10)*0.005,}
-			)
 
+			if h >= 30 then
+				minetest.chat_send_player(
+					name, "Player food saturation limit reached!"
+				)
+				return itemstack
+			end
 			-- Saturation
 			if h < 30 and hunger_change then
-				h = h + hunger_change
+				if sat_limit then
+					if h < sat_limit and (h + hunger_change) > sat_limit then
+						h = sat_limit
+					elseif h >= sat_limit then
+						local description = itemstack:get_definition().description
+						minetest.chat_send_player(
+							name, "Player food saturation limit reached for " .. description
+								.. " (" .. tostring(sat_limit) .. ")."
+						)
+						return itemstack
+					else
+						h = h + hunger_change
+					end
+				else
+					h = h + hunger_change
+				end
+
 				if h > 30 then h = 30 end
 				hbhunger.hunger[name] = h
 				hbhunger.set_hunger_raw(user)
@@ -108,6 +124,15 @@ function hbhunger.item_eat(hunger_change, replace_with_item, poisen, heal, sound
 				poisenp(1, poisen, 0, user)
 			end
 
+			minetest.sound_play(
+				{name = sound or "hbhunger_eat_generic",
+				gain = 1},
+				{object=user,
+				max_hear_distance = 16,
+				pitch = 1 + math.random(-10, 10)*0.005,}
+			)
+
+			itemstack:take_item()
 			if itemstack:get_count() == 0 then
 				itemstack:add_item(replace_with_item)
 			else
@@ -146,7 +171,7 @@ if minetest.get_modpath("mobs") ~= nil then
 		hbhunger.register_food("mobs:chicken_cooked", 6)
 		hbhunger.register_food("mobs:chicken_raw", 2, "", 3)
 		hbhunger.register_food("mobs:chicken_egg_fried", 2)
-		if minetest.get_modpath("bucket") then 
+		if minetest.get_modpath("bucket") then
 			hbhunger.register_food("mobs:bucket_milk", 3, "bucket:bucket_empty")
 		end
 	else
@@ -451,6 +476,23 @@ if minetest.get_modpath("nssm") then
 	-- superfoods
 	hbhunger.register_food("nssm:phoenix_nuggets", 20, "", nil, 20)
 	hbhunger.register_food("nssm:phoenix_tear", 20, "", nil, 20)
+end
+
+if minetest.get_modpath("farming") and farming.mod == "civfarm" then
+	-- poor (0-5), poisonous
+	hbhunger.register_food("farming:potato", 1.5, nil, 3, nil, nil, 5)
+	hbhunger.register_food("flowers:mushroom_red", 1.5, nil, 3, nil, nil, 5)
+	-- adequate (6-10)
+	hbhunger.register_food("flowers:mushroom_brown", 2, nil, nil, nil, nil, 10)
+	hbhunger.register_food("default:blueberries", 2, nil, nil, nil, nil, 10)
+	hbhunger.register_food("default:apple", 2, nil, nil, nil, nil, 10)
+	-- good (11-20)
+	hbhunger.register_food("farming:baked_potato", 4, nil, nil, nil, nil, 15)
+	hbhunger.register_food("farming:bread", 4, nil, nil, nil, nil, 15)
+	-- very good (21-25)
+
+	-- excellent (25+)
+
 end
 
 -- player-action based hunger changes
