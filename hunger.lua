@@ -517,7 +517,7 @@ function hbhunger.handle_node_actions(pos, oldnode, player, ext)
 	if exhaus > hbhunger.EXHAUST_LVL then
 		exhaus = 0
 		local h = tonumber(hbhunger.hunger[name])
-		h = h - 1
+		h = h - 0.1
 		if h < 0 then h = 0 end
 		hbhunger.hunger[name] = h
 		hbhunger.set_hunger_raw(player)

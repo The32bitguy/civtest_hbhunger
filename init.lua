@@ -8,6 +8,8 @@ hbhunger.food = {}
 -- HUD statbar values
 hbhunger.hunger = {}
 hbhunger.hunger_out = {}
+-- Used for post-hunger-reset checks
+hbhunger.did_starve = {}
 
 -- Count number of poisonings a player has at once
 hbhunger.poisonings = {}
@@ -20,16 +22,16 @@ hbhunger.HUD_TICK = 0.1
 --Some hunger settings
 hbhunger.exhaustion = {} -- Exhaustion is experimental!
 
-hbhunger.HUNGER_TICK = 800 -- time in seconds after that 1 hunger point is taken
-hbhunger.EXHAUST_DIG = 3  -- exhaustion increased this value after digged node
-hbhunger.EXHAUST_PLACE = 1 -- exhaustion increased this value after placed
-hbhunger.EXHAUST_MOVE = 0.3 -- exhaustion increased this value if player movement detected
-hbhunger.EXHAUST_LVL = 160 -- at what exhaustion player satiation gets lowerd
+hbhunger.HUNGER_TICK = 80 -- time in seconds after that 0.1 hunger point is taken
+hbhunger.EXHAUST_DIG = 0  -- exhaustion increased this value after digged node
+hbhunger.EXHAUST_PLACE = 0 -- exhaustion increased this value after placed
+hbhunger.EXHAUST_MOVE = 0.25 -- exhaustion increased this value if player movement detected
+hbhunger.EXHAUST_LVL = 16 -- at what exhaustion player satiation gets lowerd
 
 
 --load custom settings
 local set = io.open(minetest.get_modpath("hbhunger").."/hbhunger.conf", "r")
-if set then 
+if set then
 	dofile(minetest.get_modpath("hbhunger").."/hbhunger.conf")
 	set:close()
 end
@@ -75,7 +77,7 @@ hbhunger.set_hunger_raw = function(player)
 	if not inv  or not value then return nil end
 	if value > 30 then value = 30 end
 	if value < 0 then value = 0 end
-	
+
 	inv:set_stack("hunger", 1, ItemStack({name=":", count=value+1}))
 
 	return true
@@ -96,7 +98,8 @@ end)
 minetest.register_on_respawnplayer(function(player)
 	-- reset hunger (and save)
 	local name = player:get_player_name()
-	hbhunger.hunger[name] = 20
+        hbhunger.did_starve[name] = hbhunger.hunger[name] == 0
+	hbhunger.hunger[name] = 5
 	hbhunger.set_hunger_raw(player)
 	hbhunger.exhaustion[name] = 0
 end)
@@ -119,15 +122,17 @@ minetest.register_globalstep(function(dtime)
 			-- heal player by 1 hp if not dead and satiation is > 15 (of 30)
 			if h > 15 and hp > 0 and player:get_breath() > 0 then
 				player:set_hp(hp+1)
-				-- or damage player by 1 hp if satiation is < 2 (of 30)
-				elseif h <= 1 then
-					if hp-1 >= 0 then player:set_hp(hp-1) end
+				-- or damage player by 5 hp if satiation is zero (of 30)
+				elseif h == 0 then
+					if hp-1 >= 0 then player:set_hp(hp-5) end
 				end
 			end
-			-- lower satiation by 1 point after xx seconds
+			-- lower satiation by 0.1 point after xx seconds
 			if timer2 > hbhunger.HUNGER_TICK then
-				if h > 0 then
-					h = h-1
+				if h > 0 and hp > 0 then
+					h = h - 0.1
+					h = math.max(h, 0)
+                                        hbhunger.did_starve[name] = false
 					hbhunger.hunger[name] = h
 					hbhunger.set_hunger_raw(player)
 				end
@@ -135,7 +140,7 @@ minetest.register_globalstep(function(dtime)
 
 			-- update all hud elements
 			update_hud(player)
-			
+
 			local controls = player:get_player_control()
 			-- Determine if the player is walking
 			if controls.up or controls.down or controls.left or controls.right then
@@ -148,3 +153,39 @@ minetest.register_globalstep(function(dtime)
 end)
 
 end
+
+minetest.register_chatcommand(
+   "hunger",
+   {
+      params = "[<target> [<hunger>]]",
+      description = "Sets target's hunger to specified value. "
+         .. "Default target is sender, default value is 0.0.",
+      privs = { server = true },
+      func = function(sender, target, hunger)
+         if target == "" then
+            target = nil
+         end
+
+         if hunger == "" then
+            hunger = nil
+            if hunger then
+               hunger = tonumber(hunger)
+               if not hunger then
+                  minetest.chat_send_player(sender, "New hunger must be a number.")
+                  return false
+               end
+            end
+
+            local player = minetest.get_player_by_name(target or sender)
+            if not player then
+               minetest.chat_send_player(sender, "Player not found.")
+               return false
+            end
+
+            local pname = player:get_player_name()
+            hbhunger.hunger[pname] = hunger or 0.0
+            hbhunger.set_hunger_raw(player)
+         end
+      end
+   }
+)
