@@ -26,7 +26,7 @@ hbhunger.HUNGER_TICK = 80 -- time in seconds after that 0.1 hunger point is take
 hbhunger.EXHAUST_DIG = 0  -- exhaustion increased this value after digged node
 hbhunger.EXHAUST_PLACE = 0 -- exhaustion increased this value after placed
 hbhunger.EXHAUST_MOVE = 0.25 -- exhaustion increased this value if player movement detected
-hbhunger.EXHAUST_LVL = 16 -- at what exhaustion player satiation gets lowerd
+hbhunger.EXHAUST_LVL = 25 -- at what exhaustion player satiation gets lowerd
 
 
 --load custom settings
