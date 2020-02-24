@@ -136,10 +136,8 @@ function hbhunger.item_eat(hunger_change, replace_with_item, poison, heal, sound
 			if itemstack:get_count() == 0 then
 				itemstack:add_item(replace_with_item)
 			else
-				local inv = user:get_inventory()
-				if inv:room_for_item("main", replace_with_item) then
-					inv:add_item("main", replace_with_item)
-				else
+                                local leftover = player_api.give_item(user, replace_with_item)
+				if leftover and not leftover:is_empty() then
 					minetest.add_item(user:getpos(), replace_with_item)
 				end
 			end
@@ -480,12 +478,12 @@ end
 
 if minetest.get_modpath("farming") and farming.mod == "civfarm" then
 	-- poor (0-5), poisonous
-	hbhunger.register_food("farming:potato", 1.5, nil, 3, nil, nil, 5)
-	hbhunger.register_food("flowers:mushroom_red", 1.5, nil, 3, nil, nil, 5)
+	hbhunger.register_food("farming:potato", 2, nil, 3, nil, nil, 5)
+	hbhunger.register_food("flowers:mushroom_red", 0.5, nil, 3, nil, nil, 5)
 	-- adequate (6-10)
-	hbhunger.register_food("flowers:mushroom_brown", 2, nil, nil, nil, nil, 10)
-	hbhunger.register_food("default:blueberries", 2, nil, nil, nil, nil, 10)
-	hbhunger.register_food("default:apple", 2, nil, nil, nil, nil, 10)
+	hbhunger.register_food("flowers:mushroom_brown", 0.5, nil, nil, nil, nil, 10)
+	hbhunger.register_food("default:blueberries", 0.5, nil, nil, nil, nil, 10)
+	hbhunger.register_food("default:apple", 0.5, nil, nil, nil, nil, 10)
 	-- good (11-20)
 	hbhunger.register_food("farming:baked_potato", 4, nil, nil, nil, nil, 15)
 	hbhunger.register_food("farming:bread", 4, nil, nil, nil, nil, 15)
