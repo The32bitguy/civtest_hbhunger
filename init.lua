@@ -131,7 +131,9 @@ minetest.register_globalstep(function(dtime)
 	                                end
 					player:set_hp(hp + hp_change)
 				elseif h == 0 then
-					player:set_hp(math.max(0, hp - 5))
+					if hp > 0 then
+						player:set_hp(math.max(0, hp - 5))
+					end
 				end
 			end
 			-- lower satiation by 0.1 point after xx seconds
@@ -168,31 +170,29 @@ minetest.register_chatcommand(
       description = "Sets target's hunger to specified value. "
          .. "Default target is sender, default value is 0.0.",
       privs = { server = true },
-      func = function(sender, target, hunger)
-         if target == "" then
-            target = nil
+      func = function(sender, params)
+         local split_params = string.split(params, " ")
+
+         local target = split_params[1] or sender
+         local hunger = 0.0
+         if split_params[2] then
+            hunger = tonumber(split_params[2])
          end
 
-         if hunger == "" then
-            hunger = nil
-            if hunger then
-               hunger = tonumber(hunger)
-               if not hunger then
-                  minetest.chat_send_player(sender, "New hunger must be a number.")
-                  return false
-               end
-            end
-
-            local player = minetest.get_player_by_name(target or sender)
-            if not player then
-               minetest.chat_send_player(sender, "Player not found.")
-               return false
-            end
-
-            local pname = player:get_player_name()
-            hbhunger.hunger[pname] = hunger or 0.0
-            hbhunger.set_hunger_raw(player)
+         if not hunger then
+            minetest.chat_send_player(sender, "New hunger must be a number.")
+            return false
          end
+
+         local player = minetest.get_player_by_name(target)
+         if not player then
+            minetest.chat_send_player(sender, "Player not found.")
+            return false
+         end
+
+         local pname = player:get_player_name()
+         hbhunger.hunger[pname] = hunger or 0.0
+         hbhunger.set_hunger_raw(player)
       end
    }
 )
