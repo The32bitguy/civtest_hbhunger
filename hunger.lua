@@ -476,20 +476,45 @@ if minetest.get_modpath("nssm") then
 	hbhunger.register_food("nssm:phoenix_tear", 20, "", nil, 20)
 end
 
-if minetest.get_modpath("farming") and farming.mod == "civfarm" then
-	-- poor (0-5), poisonous
-	hbhunger.register_food("farming:potato", 2, nil, 3, nil, nil, 5)
-	hbhunger.register_food("flowers:mushroom_red", 0.5, nil, 3, nil, nil, 5)
-	-- adequate (6-10)
-	hbhunger.register_food("flowers:mushroom_brown", 0.5, nil, nil, nil, nil, 10)
-	hbhunger.register_food("default:blueberries", 0.5, nil, nil, nil, nil, 10)
-	hbhunger.register_food("default:apple", 0.5, nil, nil, nil, nil, 10)
-	-- good (11-20)
-	hbhunger.register_food("farming:baked_potato", 4, nil, nil, nil, nil, 15)
-	hbhunger.register_food("farming:bread", 4, nil, nil, nil, nil, 15)
-	-- very good (21-25)
+if minetest.get_modpath("farming")
+   and farming.mod == "civfarm"
+   and minetest.get_modpath("bucket")
+   and minetest.get_modpath("mobs")
+   and mobs.mod
+   and mobs.mod == "redo"
+then
 
-	-- excellent (25+)
+   -- poor (0-5), poisonous
+   hbhunger.register_food("flowers:mushroom_red", 0.5, nil, 25, nil, nil, 5)
+   hbhunger.register_food(      "farming:potato", 2,   nil, 40, nil, nil, 5)
+   hbhunger.register_food(       "mobs:pork_raw", 2,   nil, 40, nil, nil, 5)
+   hbhunger.register_food(    "mobs:chicken_raw", 2,   nil, 40, nil, nil, 5)
+   hbhunger.register_food(       "mobs:meat_raw", 2,   nil, 40, nil, nil, 5)
+   hbhunger.register_food(     "mobs:mutton_raw", 2,   nil, 40, nil, nil, 5)
+   hbhunger.register_food(     "mobs:rabbit_raw", 2,   nil, 40, nil, nil, 5)
+   -- adequate (6-10)
+   hbhunger.register_food("flowers:mushroom_brown", 1,   nil, nil, nil, nil, 10)
+   hbhunger.register_food(   "default:blueberries", 0.5, nil, nil, nil, nil, 10)
+   hbhunger.register_food(         "default:apple", 1,   nil, nil, nil, nil, 10)
+   hbhunger.register_food(       "mobs:rat_cooked", 2,   nil, nil, nil, nil, 10)
+   hbhunger.register_food(            "mobs:honey", 1,   nil, nil, nil, nil, 10)
+   -- good (11-20)
+   hbhunger.register_food(  "farming:baked_potato", 3, nil, nil, nil, nil, 15)
+   hbhunger.register_food(         "farming:bread", 3, nil, nil, nil, nil, 15)
+   hbhunger.register_food(      "mobs:pork_cooked", 3, nil, nil, nil, nil, 15)
+   hbhunger.register_food(   "mobs:chicken_cooked", 3, nil, nil, nil, nil, 15)
+   hbhunger.register_food(    "mobs:rabbit_cooked", 3, nil, nil, nil, nil, 15)
+   hbhunger.register_food(    "mobs:mutton_cooked", 3, nil, nil, nil, nil, 15)
+   hbhunger.register_food("mobs:chicken_egg_fried", 3, nil, nil, nil, nil, 15)
+   hbhunger.register_food(             "mobs:meat", 3, nil, nil, nil, nil, 15)
+
+   hbhunger.register_food("mobs:bucket_milk", 3, "bucket:bucket_empty", nil, nil, nil, 15)
+
+   hbhunger.register_food("mobs:butter", 2, nil, nil, nil, nil, 20)
+   hbhunger.register_food("mobs:cheese", 4, nil, nil, nil, nil, 20)
+   -- very good (21-25)
+
+   -- excellent (25+)
 
 end
 
