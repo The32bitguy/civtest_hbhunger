@@ -83,7 +83,7 @@ function hbhunger.item_eat(hunger_change, replace_with_item, poison, heal, sound
 
 			if h >= 30 then
 				minetest.chat_send_player(
-					name, "Player food saturation limit reached!"
+					name, "Player food satiation limit reached!"
 				)
 				return itemstack
 			end
@@ -95,8 +95,8 @@ function hbhunger.item_eat(hunger_change, replace_with_item, poison, heal, sound
 					elseif h >= sat_limit then
 						local description = itemstack:get_definition().description
 						minetest.chat_send_player(
-							name, "Player food saturation limit reached for " .. description
-								.. " (" .. tostring(sat_limit) .. ")."
+							name, "You can't eat more " .. description
+                                                           .. ". It has a satiation limit of " .. tostring(sat_limit) .. "."
 						)
 						return itemstack
 					else

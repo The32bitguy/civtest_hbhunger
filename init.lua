@@ -25,7 +25,7 @@ hbhunger.exhaustion = {} -- Exhaustion is experimental!
 hbhunger.HUNGER_TICK = 300 -- time in seconds after that 0.1 hunger point is taken
 hbhunger.EXHAUST_DIG = 0  -- exhaustion increased this value after digged node
 hbhunger.EXHAUST_PLACE = 0 -- exhaustion increased this value after placed
-hbhunger.EXHAUST_MOVE = 0.25 -- exhaustion increased this value if player movement detected
+hbhunger.EXHAUST_MOVE = 0.20 -- exhaustion increased this value if player movement detected
 hbhunger.EXHAUST_LVL = 25 -- at what exhaustion player satiation gets lowerd
 
 
