@@ -71,6 +71,24 @@ local function poison_player(tick, time, time_left, player)
 
 end
 
+local function is_plural(str)
+   local len = str:len()
+   return str:sub(len, len) == "s"
+end
+
+local function to_plural(str)
+   if not is_plural(str) then
+         local len = str:len()
+         local last = str:sub(len, len)
+         if last == "y" then
+            return str:sub(0, len - 1) .. "ies"
+         else
+            return str .. "s"
+         end
+   end
+   return str
+end
+
 function hbhunger.item_eat(hunger_change, replace_with_item, poison, heal, sound, sat_limit)
 	return function(itemstack, user, pointed_thing)
 		if itemstack:peek_item() ~= nil and user ~= nil then
@@ -93,10 +111,10 @@ function hbhunger.item_eat(hunger_change, replace_with_item, poison, heal, sound
 					if h < sat_limit and (h + hunger_change) > sat_limit then
 						h = sat_limit
 					elseif h >= sat_limit then
-						local description = itemstack:get_definition().description
+						local description = to_plural(itemstack:get_definition().description)
 						minetest.chat_send_player(
-							name, "You can't eat more " .. description
-                                                           .. ". It has a satiation limit of " .. tostring(sat_limit) .. "."
+							name, "You can't eat any more " .. description
+								.. ". They have a satiation limit of " .. tostring(sat_limit) .. "."
 						)
 						return itemstack
 					else
