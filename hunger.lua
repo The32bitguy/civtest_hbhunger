@@ -518,7 +518,7 @@ then
    hbhunger.register_food(            "mobs:honey", 1,   nil, nil, nil, nil, 10)
    -- good (11-20)
    hbhunger.register_food(  "farming:baked_potato", 3, nil, nil, nil, nil, 15)
-   hbhunger.register_food(         "farming:bread", 3, nil, nil, nil, nil, 15)
+   hbhunger.register_food(         "farming:bread", 4, nil, nil, nil, nil, 15)
    hbhunger.register_food(      "mobs:pork_cooked", 3, nil, nil, nil, nil, 15)
    hbhunger.register_food(   "mobs:chicken_cooked", 3, nil, nil, nil, nil, 15)
    hbhunger.register_food(    "mobs:rabbit_cooked", 3, nil, nil, nil, nil, 15)
