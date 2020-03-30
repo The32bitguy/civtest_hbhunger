@@ -122,7 +122,8 @@ minetest.register_globalstep(function(dtime)
 			if timer > 4 then
 				-- heal player by 1 hp if not dead and satiation is > 5 (of 30)
 				-- or damage player by 5 hp if satiation is zero (of 30)
-				if h > 5 and hp > 0 and player:get_breath() > 0 then
+				local breath = player:get_breath()
+				if h > 5 and hp > 0 and breath and breath > 0 then
 					local hp_change = 1
 					if h > 20 then
 						hp_change = 3
