@@ -539,8 +539,8 @@ then
    hbhunger.register_food("mobs:chicken_egg_fried", 3, nil, nil, nil, nil, 15)
    hbhunger.register_food(             "mobs:meat", 3, nil, nil, nil, nil, 15)
    hbhunger.register_food(      "default:pie_meat", 6, nil, nil, nil, nil, 20)
-   hbhunger.register_food(   "default:pie_berry", 3.5, nil, nil, nil, nil, 17)
-   hbhunger.register_food("default:pie_mushroom", 4.5, nil, nil, nil, nil, 18)
+   hbhunger.register_food(     "default:pie_berry", 3.5, nil, nil, nil, nil, 17)
+   hbhunger.register_food(  "default:pie_mushroom", 4.5, nil, nil, nil, nil, 18)
 
    hbhunger.register_food("mobs:bucket_milk", 3, "bucket:bucket_empty", nil, nil, nil, 15)
 
