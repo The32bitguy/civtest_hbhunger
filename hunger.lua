@@ -561,6 +561,12 @@ then
    hbhunger.register_food("farming:ploughmans", 7.5, nil, nil, nil, nil, 30)
 end
 
+--The two foods are the same substance in different containers
+if minetest.get_modpath("survival_plus") then
+hbhunger.register_food("survival_plus:steel_tea", 1, "vessels:steel_bottle", nil, nil, nil, 8)
+hbhunger.register_food("survival_plus:glass_tea", 1, "vessels:glass_bottle", nil, nil, nil, 8)
+end
+
 -- player-action based hunger changes
 function hbhunger.handle_node_actions(pos, oldnode, player, ext)
 	-- is_fake_player comes from the pipeworks, we are not interested in those
